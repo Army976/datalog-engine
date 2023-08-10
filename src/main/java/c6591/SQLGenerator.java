@@ -104,16 +104,27 @@ public class SQLGenerator {
             .collect(Collectors.joining(" AND "));
     
         // Generate ON DUPLICATE KEY UPDATE section THIS FIXES THE INSERT DUPLICATE PROBLEM
-        String onDuplicateKeyUpdate = termSelectors.stream()
-            .map(termSelector -> termSelector.split("\\.")[1] + "=VALUES(" + termSelector.split("\\.")[1] + ")")
-            .collect(Collectors.joining(", "));
-    
+        /*String onDuplicateKeyUpdate = termSelectors.stream()
+            .map(termSelector -> (termSelector.split("\\.").length==1 ?
+                    termSelector.split("\\.")[0] + "=VALUES(" + termSelector.split("\\.")[0] + ")" : termSelector.split("\\.")[1] + "=VALUES(" + termSelector.split("\\.")[1] + ")"))
+            .collect(Collectors.joining(", "));*/
+        String onDuplicateKeyUpdate = "";
+        List<Term> list = rule.head.predicate.terms;
+        for (int i = 1; i < list.size()+1; i++) {
+            if(list.get(i-1) instanceof Constant){
+                //onDuplicateKeyUpdate += "a" + i + "=VALUES('" + list.get(i-1).name + "'), ";
+            }
+            else {
+                onDuplicateKeyUpdate += "a" + i + "=VALUES(a" + i + "), ";
+            }
+        }
+        onDuplicateKeyUpdate = onDuplicateKeyUpdate.substring(0, onDuplicateKeyUpdate.length()-2);
+
         return "INSERT INTO " + head + " SELECT " + select + " FROM " + from + 
                (where.isEmpty() ? "" : " WHERE " + where) + 
                " ON DUPLICATE KEY UPDATE " + onDuplicateKeyUpdate;
     }
     
-
     public Map<String, String> getTables() {
         return tables;
     }

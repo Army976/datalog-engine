@@ -4,6 +4,8 @@ Please look at the **SETUP.md** file setup, maven, and github instructions.
 
 ## Developing
 Once you have a local branch with maven setup, you compile and run with:
+- `mvn clean` to debuild the project
+- `mvn package` to rebuild the project
 - `mvn compile` to compile
 - `mvn exec:java` to run with the default test file (test.dl)
 - `mvn exec:java "-Dexec.args=other_filename"` to run a different datalog file from the **input** folder.
